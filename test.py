@@ -10,11 +10,15 @@ from resizeimage import resizeimage
 np.set_printoptions(threshold=np.nan)
 
 
-'''
+featureMaps = 48
+r = 4
+d = 32
+size = (d-r+1)
+
 def generateRandomWeights():
     matricesBank = []
 
-    for x in range(10):
+    for x in range(featureMaps):
         m1 = np.random.randint(100, size=(4, 4))
         matricesBank.append(m1)
     return (matricesBank)
@@ -22,6 +26,7 @@ def generateRandomWeights():
 #print(generateRandomWeights())
 
 
+'''
 def orthognalize():
     orthArray = []
     bank = generateRandomWeights()
@@ -55,57 +60,32 @@ def SVD():
     return U
 
 
-'''featureMaps = 48
-r = 4
-d = 32
-size = (d-r+1)'''
+''''''
 
 def convolve(image, kernel):
-	'''# grab the spatial dimensions of the image, along with
-	# the spatial dimensions of the kernel'''
-	(iH, iW) = image.shape[:2]
-	(kH, kW) = kernel.shape[:2]
 
-	'''# allocate memory for the output image, taking care to
-	# "pad" the borders of the input image so the spatial
-	# size (i.e., width and height) are not reduced'''
-	pad = int((kW - 1) / 2)
-	image = cv2.copyMakeBorder(image, pad, pad, pad, pad,
-		cv2.BORDER_REPLICATE)
-	output = np.zeros((iH, iW), dtype="float32")
-    # loop over the input image "sliding" the kernel across
-    # each (x, y)-coordinate from left-to-right and top to
-	# bottom'''
-
-	for y in np.arange(pad, iH + pad):
-		for x in np.arange(pad, iW + pad):
-			'''# extract the ROI of the image by extracting the
-			# *center* region of the current (x, y)-coordinates
-			# dimensions'''
-			roi = image[y - pad:y + pad - 1, x - pad:x + pad - 1]
-
-			'''# perform the actual convolution by taking the
-			# element-wise multiplicate between the ROI and
-			# the kernel, then summing the matrix'''
-			k = (roi * kernel).sum()
-
-			'''# store the convolved value in the output (x,y)-
-			# coordinate of the output image'''
-			output[y - pad, x - pad] = k
-    # rescale the output image to be in the range [0, 255]
-	output = rescale_intensity(output, in_range=(-1, 1))
-	output = (output * 1).astype("uint8")
-
-	# return the output image
-	return output
+    output = np.zeros((size, size), dtype="float32")
+    Sum = 0
+    j = 0
+    i = 0
+    for m in range(size):
+        for n in range(size):
+            x = image[i] + m - 1
+            y = j + n - 1 * kernel[m][n]
+            coordinate = (x, y)
+            Sum = coordinate.sum()
+            output[i][j] = Sum
+            i += 1
+            j += 1
+    return output
 
 
-
-
-image11 = cv2.imread("mycar32.png")
+image11 = cv2.imread("mycar.png")
 gray = cv2.cvtColor(image11, cv2.COLOR_BGR2GRAY)
 
-print("Applying kernal: ")
+convoleOutput = convolve(gray, SVD()[0])
+'''
+print("Applying SVD on the image: ")
 convoleOutput = convolve(gray, SVD())
 cv2.imshow("feature", convoleOutput)
 cv2.waitKey(0)
@@ -115,8 +95,6 @@ cv2.destroyAllWindows()
 
 
 
-
-'''
 
 # construct average blurring kernels used to smooth an image
 smallBlur = np.ones((7, 7), dtype="float") * (1.0 / (7 * 7))
