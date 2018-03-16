@@ -57,33 +57,57 @@ print(U)
 def SVD():
     m1 = np.random.randint(100, size=(4, 4))
     U, s, V = np.linalg.svd(m1)
+    a = np.asarray([[[-0.57773964,  0.58086364,  0.50431857, -0.27290496],
+ [-0.57079021, -0.52149295, -0.3422028,  -0.53398585],
+ [-0.31149785,  0.49091473, -0.74364389,  0.33009934],
+ [-0.49334018, -0.38684011,  0.27487048,  0.72898314]],
+[[-0.57773964,  0.58086364,  0.50431857, -0.27290496],
+ [-0.57079021, -0.52149295, -0.3422028,  -0.53398585],
+ [-0.31149785, 0.49091473 ,-0.74364389 , 0.33009934],
+ [-0.49334018,-0.38684011,  0.27487048 , 0.72898314]],
+[[-0.57773964,  0.58086364,  0.50431857, -0.27290496],
+ [-0.57079021, -0.52149295 ,-0.3422028 , -0.53398585],
+ [-0.31149785,  0.49091473, -0.74364389,  0.33009934],
+ [-0.49334018, -0.38684011,  0.27487048,  0.72898314]],
+[[-0.57773964,  0.58086364,  0.50431857, -0.27290496],
+ [-0.57079021, -0.52149295, -0.3422028 , -0.53398585],
+ [-0.31149785,  0.49091473, -0.74364389,  0.33009934],
+ [-0.49334018, -0.38684011,  0.27487048,  0.72898314]]])
     return U
+#print(SVD())
 
+def test():
+    print(r)
 
-''''''
+#test()
 
 def convolve(image, kernel):
 
     output = np.zeros((size, size), dtype="float32")
-    Sum = 0
-    j = 0
-    i = 0
-    for m in range(size):
-        for n in range(size):
-            x = image[i] + m - 1
-            y = j + n - 1 * kernel[m][n]
-            coordinate = (x, y)
-            Sum = coordinate.sum()
-            output[i][j] = Sum
-            i += 1
-            j += 1
+    Sum1 = 0.0
+    Sum2 = 0.0
+    j = 1
+    i = 1
+
+    r = 4
+    for m in range(r):
+        for n in range(r):
+            Sum1 = Sum1 + (image[(i + m - 1), (j + n - 1)] * kernel[m][n])
+        Sum2 = Sum2 + Sum1
+        output[i , j] = Sum2
+        i +=1
+        j +=1
     return output
 
 
-image11 = cv2.imread("mycar.png")
-gray = cv2.cvtColor(image11, cv2.COLOR_BGR2GRAY)
 
-convoleOutput = convolve(gray, SVD()[0])
+image11 = cv2.imread("mycar32.png")
+iar=np.asarray(image11)
+#print(iar[0][1])
+gray = cv2.cvtColor(image11, cv2.COLOR_BGR2GRAY)
+#print(gray[1+0-1, 1 + 0 -1]* -0.57773964 )
+convoleOutput = convolve(gray, np.asarray(SVD()))
+print(np.asarray(convoleOutput))
 '''
 print("Applying SVD on the image: ")
 convoleOutput = convolve(gray, SVD())
